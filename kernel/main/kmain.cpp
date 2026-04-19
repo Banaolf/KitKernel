@@ -21,7 +21,9 @@ extern "C" void kernel_main(uint64_t magic, uint64_t multiboot_address) {
 
 	serial_print("Magic number is correct.");
 	kprint("Welcome to Kit Kernel!\n");
-	kprint_char('>', 0x70);
+	kprint_char('>', 0x0F);
 
-	halt();
+	while (true) {
+		asm volatile("hlt");
+	}
 }

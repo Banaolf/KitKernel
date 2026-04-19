@@ -52,6 +52,7 @@ static void scroll() {
 void kprint_char(const char c, uint8_t co) {
 	if (c == '\n') {
 		row++;
+		if (row > ROW_MAX) scroll();
 		col = 0;
 		update_cursor();
 		return;
@@ -64,6 +65,7 @@ void kprint_char(const char c, uint8_t co) {
 			col += tosum;
 		} else col+=4;
 		update_cursor();
+		return;
 	}
 	else col++;
 	VGA[pos] = (uint16_t)c | ((uint16_t)co << 8);
