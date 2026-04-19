@@ -38,7 +38,6 @@ kernel.bin: $(OBJS)
 kernel.iso: kernel.bin
 	mkdir -p $(ISODIR)/boot/grub
 	cp kernel.bin $(ISODIR)/boot/kernel.bin
-	cp grub/grub.cfg $(ISODIR)/boot/grub/grub.cfg
 	grub-mkrescue -o kernel.iso $(ISODIR)
 
 # Rule for C++ files
@@ -52,6 +51,8 @@ $(OBJDIR)/%_asm.o: $(SRCDIR)/%.s
 	$(AS) $(ASFLAGS) $< -o $@
 
 clean:
-	rm -rf $(OBJDIR) $(ISODIR) kernel.bin kernel.iso
+	rm -rf $(OBJDIR) $(ISODIR)/boot/kernel.bin kernel.bin kernel.iso
 
+run:
+	qemu-system-x86_64 -cdrom kernel.iso -m 256M
 .PHONY: all clean
