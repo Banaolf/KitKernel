@@ -25,34 +25,39 @@ CXXFLAGS = -I$(INCDIR) -m64 -ffreestanding -fno-exceptions \
            -fno-stack-protector
 
 ASFLAGS  = -f elf64
-LDFLAGS  = -n -T linker.ld
-
+LDFLAGS  = -n -T linker.ld --no-warn-rwx-segments
+TARGET = kernel.iso
 # --- Rules ---
-all: kernel.iso
+all: $(TARGET)
 
-# 1. Link the kernel binary
+# Link the kernel binary
+build: $(TARGET)
 kernel.bin: $(OBJS)
 	$(LD) $(LDFLAGS) -o $@ $(OBJS)
 
-# 2. Build the ISO
-kernel.iso: kernel.bin
+# Build the ISO
+$(TARGET): kernel.bin
 	mkdir -p $(ISODIR)/boot/grub
 	cp kernel.bin $(ISODIR)/boot/kernel.bin
-	grub-mkrescue -o kernel.iso $(ISODIR)
+	grub-mkrescue -o $(TARGET) $(ISODIR)
 
 # Rule for C++ files
 $(OBJDIR)/%.o: $(SRCDIR)/%.cpp
 	@mkdir -p $(dir $@)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-# Rule for Assembly files (suffixed with _asm to avoid collisions)
+# Rule for Assembly files
 $(OBJDIR)/%_asm.o: $(SRCDIR)/%.s
 	@mkdir -p $(dir $@)
 	$(AS) $(ASFLAGS) $< -o $@
 
 clean:
-	rm -rf $(OBJDIR) $(ISODIR)/boot/kernel.bin kernel.bin kernel.iso
+	rm -rf $(OBJDIR) $(ISODIR)/boot/kernel.bin kernel.bin $(TARGET)
 
 run:
-	qemu-system-x86_64 -cdrom kernel.iso -m 256M
+	qemu-system-x86_64 -cdrom $(TARGET) -m 256M
+again:
+	all clean
+	all build
+	all run
 .PHONY: all clean

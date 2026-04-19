@@ -161,6 +161,23 @@ long_mode_start:
 
     hlt
 
+global load_gdt
+load_gdt:
+    lgdt [rdi]        ; RDI holds the first argument (gdt_ptr)
+    
+    ; Reload segment registers
+    mov ax, 0x10      ; 0x10 is the offset to the Data Segment (entry 2 * 8)
+    mov ds, ax
+    mov es, ax
+    mov fs, ax
+    mov gs, ax
+    mov ss, ax
+
+    ; Perform a "Far Return" to reload the Code Segment (CS)
+    pop rdi           ; Get return address
+    push 0x08         ; Push Code Segment offset (entry 1 * 8)
+    push rdi          ; Push return address back
+    retfq             ; "Return Far 64-bit"
 ; --- Reserve memory for tables and stack ---
 section .bss
 align 4096
