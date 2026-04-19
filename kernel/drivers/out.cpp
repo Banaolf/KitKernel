@@ -66,6 +66,20 @@ void kprint_char(const char c, uint8_t co) {
 		} else col+=4;
 		update_cursor();
 		return;
+	} else if (c == '\b') {
+		if (col == 0) {
+			if (row == 0) return;
+			row--;
+			col = COL_MAX;
+		} else col--;
+		VGA[pos] = (uint16_t)' ' | ((uint16_t)0x0F << 8);
+		update_cursor();
+		return;
+	} else if (c == '\x9C') {
+		row = 0;
+		col = 0;
+		update_cursor();
+		return;
 	}
 	else col++;
 	VGA[pos] = (uint16_t)c | ((uint16_t)co << 8);

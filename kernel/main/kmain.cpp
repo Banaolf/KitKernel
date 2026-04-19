@@ -5,7 +5,7 @@
 #include "../../include/idtpic.h"
 #include "../../include/io.h"
 
-extern "C" void kernel_main(uint64_t magic, uint64_t multiboot_address) {
+extern "C" void kernel_main(uint64_t magic, uint64_t* multiboot_address) {
 	serial_print("Welcome to Kit Kernel!");
 	init_gdt();
 	idt_init();
