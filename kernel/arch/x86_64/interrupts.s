@@ -1,4 +1,3 @@
-; Define the stubs
 %macro interrupt_stub 1
 global interrupt_stub_%1
 interrupt_stub_%1:
@@ -53,7 +52,6 @@ common_stub:
 	add rsp, 16
 	iretq
 
-; This is what your loop will use!
 section .data
 global interrupt_handler_table
 interrupt_handler_table:

@@ -11,6 +11,7 @@ inline uint16_t* vga_cursor = (uint16_t*)0x3D5;
 
 //Everything that has to do with writing to terminal/console (host and user)
 void serial_print(const char* s);
+void serial_init();
 
 void kprint_char(const char c, uint8_t co);
 void kprint(const char* s);

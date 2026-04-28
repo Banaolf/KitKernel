@@ -49,13 +49,16 @@ struct mmap_entry {
     uint32_t zero;
 };
 
+extern multiboot_tag_framebuffer* global_fb;
+extern uint64_t g_pml4_phys;
+#define __PMM__ 0
 void pmm_init(uint64_t* multiboot_addr);
-void* kmalloc_page(size_t size);
+void* kmalloc_page(size_t size = PAGE_SIZE);
 void kfree_page(void* addr, size_t size);
-
 uint64_t get_memupper();
 
 void* memset(void* dest, int value, size_t count);
 void zero_page(void* page_phys_addr);
+
 void map_page(uint64_t pml4_phys, uint64_t virt, uint64_t phys, uint64_t flags);
 void map_framebuffer(uint64_t pml4_phys, multiboot_tag_framebuffer* fb);

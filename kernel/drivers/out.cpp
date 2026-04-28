@@ -127,9 +127,8 @@ void kbackspace() {
 	update_pos();
 }
 
-static bool hasInittedSerial = false;
-
-static void serial_init() {
+/*out.h: Startup the Serial prints!*/
+void serial_init() {
 	outb(0x3F8 + 1, 0x00);
 	outb(0x3F8 + 3, 0x80);
 	outb(0x3F8 + 0, 0x03);
@@ -137,12 +136,10 @@ static void serial_init() {
 	outb(0x3F8 + 3, 0x03);
 	outb(0x3F8 + 2, 0xC7);
 	outb(0x3F8 + 4, 0x0B);
-	if (!hasInittedSerial) hasInittedSerial = true;
 }
 
 /*out.h: Print... serially!*/
 void serial_print(const char *s) {
-	if (!hasInittedSerial) serial_init();
 	for (int i = 0; s[i] != '\0'; i++) {
 		while ((inb(0x3F8 + 5) & 0x20) == 0); 
 		outb(0x3F8, s[i]);

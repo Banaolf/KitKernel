@@ -1,6 +1,7 @@
 # --- Compiler & Tools ---
 CXX = x86_64-elf-g++
 AS = nasm
+EMU = qemu-system-x86_64
 LD = x86_64-elf-ld
 
 # --- Project Structure ---
@@ -31,7 +32,6 @@ TARGET = kernel.iso
 all: $(TARGET)
 
 # Link the kernel binary
-build: $(TARGET)
 kernel.bin: $(OBJS)
 	$(LD) $(LDFLAGS) -o $@ $(OBJS)
 
@@ -55,9 +55,7 @@ clean:
 	rm -rf $(OBJDIR) $(ISODIR)/boot/kernel.bin kernel.bin $(TARGET)
 
 run:
-	qemu-system-x86_64 -cdrom $(TARGET) -m 256M
-again:
-	all clean
-	all build
-	all run
+	$(EMU) -cdrom $(TARGET) -m 256M -serial file:serial.log
+debug:
+	$(EMU) -cdrom $(TARGET) -m 256M -d int,cpu_reset -no-reboot -serial file:serial.log
 .PHONY: all clean

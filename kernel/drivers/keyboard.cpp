@@ -8,6 +8,7 @@ uint8_t modifiers = 0;
 #include "../../include/globals.h"
 
 unsigned char handle_normal(uint8_t scancode) {
+    serial_print("Handling normal...\n");
     bool break_code = (scancode & 0x80);
     uint8_t code = scancode & 0x7F;
 
@@ -15,23 +16,25 @@ unsigned char handle_normal(uint8_t scancode) {
     unsigned char key = get_Scancode()[code];
 
     if (break_code) {
-        if      (key == LSHIFT) modifiers &= ~(1 << 1);
+        if (key == LSHIFT) modifiers &= ~(1 << 1);
         else if (key == LCTRL)  modifiers &= ~(1 << 0);
         else if (key == LALT)   modifiers &= ~(1 << 3);
         else if (key == RSHIFT) modifiers &= ~(1 << 6);
         return 0;
     }
 
-    if      (key == LSHIFT) { modifiers |= (1 << 1); return 0; }
+    if (key == LSHIFT) { modifiers |= (1 << 1); return 0; }
     else if (key == LCTRL)  { modifiers |= (1 << 0); return 0; }
     else if (key == LALT)   { modifiers |= (1 << 3); return 0; }
     else if (key == RSHIFT) { modifiers |= (1 << 6); return 0; }
 
     if (modifiers & (1 << 1) || modifiers & (1 << 6)) {
+        serial_print("Shifted\n");
         return get_Scancode_Shifted()[code];
     } 
     
     else if (modifiers & (1 << 4)) {
+        serial_print("Altgr\n");
         return get_Scancode_Altgr()[code];
     }
 
@@ -39,6 +42,7 @@ unsigned char handle_normal(uint8_t scancode) {
 }
 
 unsigned char handle_extended(uint8_t scancode) {
+    serial_print("Extended");
     bool break_code = (scancode & 0x80);
     uint8_t ext = scancode & 0x7F;
 
@@ -73,6 +77,7 @@ unsigned char handle_extended(uint8_t scancode) {
 static bool is_extended = false;
 
 void keyboard_handler_callback() {
+    serial_print("Callback\n");
     uint8_t scancode = inb(0x60);
 
     if (scancode == 0xE0) {
