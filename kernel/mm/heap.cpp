@@ -173,38 +173,48 @@ void* krealloc(void* __ptr, size_t size) {
     if (!__ptr) return NULL;
     size = (size + 15) & ~15;
 
-    //Coalesce
     Mhdr_t* hdr = (Mhdr_t*)((uint8_t*)__ptr - sizeof(MemoryHeader));
-    if (hdr->next && hdr->next->is_free && hdr->next->size + sizeof(MemoryHeader) >= size) {
-        coalescemhdrs(hdr);
+    size_t old_size = hdr->size;
 
+    if (hdr->next && hdr->next->is_free && (hdr->size + sizeof(MemoryHeader) + hdr->next->size) >= size) {
+        coalescemhdrs(hdr);
         serial_print("Reallocating memory: Next.\n");
-        return __ptr;
-    } else if (hdr->prev && hdr->prev->is_free && hdr->prev->size + sizeof(MemoryHeader) >= size) {
-        kmcopy((void*)((uint8_t*)hdr + sizeof(MemoryHeader)), (void*)((uint8_t*)hdr->prev + sizeof(MemoryHeader)), (hdr->size > size) ? size : hdr->size);
+        return __ptr; 
+    } else if (hdr->prev && hdr->prev->is_free && (hdr->size + sizeof(MemoryHeader) + hdr->prev->size) >= size) {
+        kmcopy((void*)((uint8_t*)hdr + sizeof(MemoryHeader)), 
+               (void*)((uint8_t*)hdr->prev + sizeof(MemoryHeader)), 
+               (old_size > size) ? size : old_size);
+        
         coalescemhdrs(hdr, true);
 
         serial_print("Reallocating memory: Prev.\n");
         return (void*)((uint8_t*)hdr + sizeof(MemoryHeader));
-    } else if ((hdr->prev && hdr->prev->is_free) && (hdr->next && hdr->next->is_free) && hdr->prev->size + hdr->next->size + sizeof(MemoryHeader) >= size) { //Coalesce both if able to (and should)
+    }
+    else if ((hdr->prev && hdr->prev->is_free) && (hdr->next && hdr->next->is_free) && 
+            (hdr->prev->size + hdr->size + hdr->next->size + (2 * sizeof(MemoryHeader))) >= size) {
+        
         coalescemhdrs(hdr);
-
-        kmcopy((void*)((uint8_t*)hdr + sizeof(MemoryHeader)), (void*)((uint8_t*)hdr->prev + sizeof(MemoryHeader)), ((hdr->prev->size + sizeof(Mhdr_t) + hdr->size) >= size) ? size : hdr->size);
+        kmcopy((void*)((uint8_t*)hdr + sizeof(MemoryHeader)), 
+               (void*)((uint8_t*)hdr->prev + sizeof(MemoryHeader)), 
+               (old_size > size) ? size : old_size);
+        
         coalescemhdrs(hdr, true);
 
         serial_print("Reallocating memory: Next & Prev.\n");
         return (void*)((uint8_t*)hdr + sizeof(MemoryHeader));
-    } else { //Cannot coalesce, look for a part of the memory that can handle this.
+    }
+    else {
         void* ptr = kmalloc(size);
-        if (!ptr) {serial_print("Found no place for new memory, kmalloc returned null. (krealloc)\n"); return NULL;} //Cannot find new memory anywhere.
+        if (!ptr) {
+            serial_print("Found no place for new memory (krealloc)\n");
+            return NULL; 
+        }
 
-        kmcopy((void*)((uint8_t*)hdr + sizeof(MemoryHeader)), ptr, (hdr->size > size) ? size : hdr->size);
+        kmcopy((void*)((uint8_t*)hdr + sizeof(MemoryHeader)), ptr, (old_size > size) ? size : old_size);
+        
         kfree((void*)((uint8_t*)hdr + sizeof(MemoryHeader)));
 
-        serial_print("Reallocating memory: Allocated.\n");
+        serial_print("Reallocating memory: Allocated new block.\n");
         return ptr;
     }
-
-    serial_print("Found no palace for new memory (krealloc)\n");
-    return NULL;
 }
