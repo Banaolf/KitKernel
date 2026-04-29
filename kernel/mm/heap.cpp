@@ -1,8 +1,11 @@
 #include "../../include/heap.h"
 #include "../../include/out.h"
 #include "../../include/pmm.h"
+#include <stddef.h>
 
 uint64_t g_pml4_phys = 0;
+Mhdr_t* head = (MemoryHeader*)HEAPVSTART;
+Mhdr_t* current = head;
 
 void map_page(uint64_t pml4_phys, uint64_t virt, uint64_t phys, uint64_t flags) {
     page_table* current_table = (page_table*)pml4_phys;
@@ -50,14 +53,25 @@ void paging_init() {
 }
 
 void heap_init(uint64_t pml4_phys) {
-    uint64_t heap_virtual_start = 0x100000000; 
-
-    serial_print("Mapping pages...");
-    for (uint64_t i = 0; i < 1024 * 1024; i += 4096) {
-        serial_print("Allocating page...");
+    serial_print("Mapping pages...\n");
+    #define __HEAP__INIT__ 0
+    for (uint64_t i = 0; i < HEAPSIZE; i += 4096) {
+        serial_print("Allocating page...\n");
         void* phys = kmalloc_page(4096);
-        map_page(pml4_phys, heap_virtual_start + i, (uint64_t)phys, WRITABLE);
+        map_page(pml4_phys, HEAPVSTART + i, (uint64_t)phys, WRITABLE);
     }
     serial_print("Heap initiated!\n");
     has_heap_initted = true;
+
+    head->size = HEAPSIZE - sizeof(MemoryHeader);
+    head->is_free = true;
+    head->next = nullptr;
+    head->prev = nullptr;
+
+    serial_print("Created the master Memory Header. Heap is now ready.\n");
 }
+/*
+void* kmalloc(size_t size) {
+
+}
+*/

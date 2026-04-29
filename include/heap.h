@@ -1,6 +1,10 @@
 #pragma once
 #include <stdint.h>
 
+#define HEAPVSTART 0x100000000
+#define HEAPSIZE 512 * 512
+#define MIN_ALLOC_SIZE 8
+
 inline bool has_heap_initted = false;
 
 inline uint64_t pml4_idx(uint64_t virt) { return (virt >> 39) & 0x1FF; }
@@ -46,6 +50,14 @@ void heap_init(uint64_t pml4_phys);
 void map_page(uint64_t pml4_phys, uint64_t virt, uint64_t phys, uint64_t flags);
 
 #include <stddef.h>
+
+typedef struct MemoryHeader {
+    size_t size;
+    bool is_free;
+    MemoryHeader* next;
+    MemoryHeader* prev;
+}Mhdr_t;
+
 /**
  * kmalloc: Allocates x amount of space
  * into the memory and gives you the pointer to it

@@ -2,3 +2,4 @@
 *.iso
 *.o
 *.log
+.clangd
