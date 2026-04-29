@@ -41,9 +41,9 @@ extern "C" void kernel_main(uint64_t magic, uint64_t* multiboot_address) {
 
 	serial_print("Magic number is correct.\n");
 	kprint("Welcome to Kit Kernel!\n");
-	kprint_char('>', 0x0F);
+	kprint_char('>'); //kprint_char is generally faster
 
-	while (true) {
+	while (1) {
 		asm volatile("hlt");
 	}
 }

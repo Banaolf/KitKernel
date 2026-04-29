@@ -22,8 +22,10 @@ OBJS    = $(CPPOBJS) $(ASOBJS)
 
 # --- Flags ---
 CXXFLAGS = -I$(INCDIR) -m64 -ffreestanding -fno-exceptions \
-           -fno-rtti -nostdlib -Wall -Wextra -mno-red-zone \
-           -fno-stack-protector
+           -fno-rtti -nostdlib -Wall -Wextra -Werror \
+           -mno-red-zone -fno-stack-protector
+QEMUFLAGS = -m 128M -serial file:serial.log
+QEMUFLAGSDEBUG = $(QEMUFLAGS) -d int,cpu_reset -no-reboot
 
 ASFLAGS  = -f elf64
 LDFLAGS  = -n -T linker.ld --no-warn-rwx-segments
@@ -55,7 +57,7 @@ clean:
 	rm -rf $(OBJDIR) $(ISODIR)/boot/kernel.bin kernel.bin $(TARGET)
 
 run:
-	$(EMU) -cdrom $(TARGET) -m 256M -serial file:serial.log
+	$(EMU) -cdrom $(TARGET) $(QEMUFLAGS)
 debug:
-	$(EMU) -cdrom $(TARGET) -m 256M -d int,cpu_reset -no-reboot -serial file:serial.log
+	$(EMU) -cdrom $(TARGET) $(QEMUFLAGSDEBUG)
 .PHONY: all clean

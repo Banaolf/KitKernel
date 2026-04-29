@@ -205,9 +205,6 @@ String* String::split(const char __splitwith) const {
 
     //String* spt = kmalloc
 }
-bool String::find(const char *__tofind) const {
-    
-}
 String intostr(long long n) {
     if (n == 0) return String("0");
 

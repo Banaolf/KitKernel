@@ -34,19 +34,19 @@ extern uint64_t g_pml4_phys;
 /**
  * paging_init: Creates the initial PML4, identity maps the kernel and 
  * usable RAM, maps the framebuffer, and enables paging.
- */
+*/
 void paging_init();
 
 /**
  * heap_init: Sets up the virtual memory space for the kernel heap 
  * and initializes the first memory block headers.
- */
+*/
 void heap_init(uint64_t pml4_phys);
 
 /**
  * map_page: Maps a single 4KB virtual address to a physical address 
  * within the specified PML4 table.
- */
+*/
 void map_page(uint64_t pml4_phys, uint64_t virt, uint64_t phys, uint64_t flags);
 
 #include <stddef.h>
@@ -56,7 +56,12 @@ typedef struct MemoryHeader {
     bool is_free;
     MemoryHeader* next;
     MemoryHeader* prev;
-}Mhdr_t;
+}__attribute__((aligned(16))) Mhdr_t;
+
+/*
+ *kmcopy: Copies data from a pointer to another. Does not check destination's values before overwriting. Only checks if the pointers overlap.
+*/
+void kmcopy(void *__src, void *__dst, const size_t size);
 
 /**
  * kmalloc: Allocates x amount of space
@@ -70,12 +75,12 @@ void kfree(void* ptr);
 /**
  * kzero: Zeroes out a pointer
 */
-void kzero(void* ptr);
+void kpzero(void* ptr);
 /**
  * kcallor: Allocates a pointer full of zeroes
 */
 void* kcalloc(size_t nmemb, size_t size);
 /**
- * krealloc: Reallocates a pointer, with a new size and same data. Doesn't do nothing if no space was found.
+ * krealloc: Reallocates a pointer, with a new size and same data. Returns NULL if not succesfull.
 */
-void* krealloc(void* ptr, size_t size);
+void* krealloc(void* __ptr, size_t size);

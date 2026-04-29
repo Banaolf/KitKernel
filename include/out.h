@@ -13,10 +13,10 @@ inline uint16_t* vga_cursor = (uint16_t*)0x3D5;
 void serial_print(const char* s);
 void serial_init();
 
-void kprint_char(const char c, uint8_t co);
-void kprint(const char* s);
+void kprint_char(const char c, uint8_t co=0x0F);
+void kprint(const char* s, uint8_t c=0x0F);
 void kprintf(const char* __fmt, ...);
-void kprint(const char* s, uint8_t c);
+inline void kprintln(const char* s) {kprint(s); kprint_char('\n', 0x0f);}
 void kprint_times(int times, const char* s);
 void kprint_times(int times, const char* s, uint8_t c);
 void kbackspace();

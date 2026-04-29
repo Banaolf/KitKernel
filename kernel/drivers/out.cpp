@@ -91,13 +91,6 @@ void kprint_char(const char c, uint8_t co) {
 }
 
 /*out.h: Print a string*/
-void kprint(const char* s) {
-	for (int idx = 0; s[idx] != '\0'; idx++) {
-		kprint_char(s[idx], 0x0F);
-	}
-}
-
-/*out.h: Print a string with color!*/
 void kprint(const char* s, uint8_t c) {
 	for (int idx = 0; s[idx] != '\0'; idx++) {
 		kprint_char(s[idx], c);
