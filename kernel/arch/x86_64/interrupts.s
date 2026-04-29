@@ -1,9 +1,16 @@
-%macro interrupt_stub 1
-global interrupt_stub_%1
-interrupt_stub_%1:
-	push qword 0
-	push qword %1
-	jmp common_stub
+%macro isr_no_err 1
+global isr_%1
+isr_%1:
+    push qword 0
+    push qword %1
+    jmp common_stub
+%endmacro
+
+%macro isr_with_err 1
+global isr_%1
+isr_%1:
+    push qword %1
+    jmp common_stub
 %endmacro
 
 ; Generate all 256
@@ -49,6 +56,7 @@ common_stub:
 	pop rcx
 	pop rbx
 	pop rax
+
 	add rsp, 16
 	iretq
 

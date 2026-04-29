@@ -1,5 +1,7 @@
 #pragma once
 
+#include <stdint.h>
+
 #define uppercase "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 #define lowercase "abcdefghijklmnopqrstuvwxyz"
 #define numbers "1234567890"
@@ -67,5 +69,6 @@ public:
 String fmtString(const char* fmt, ...);
 String intostr(long long n);
 String ftostr(double f);
+char* uint_to_str(uint64_t value, char* buffer);
 int strToInt(const String& s);
 void strToFloat(const String& s, float& out);

@@ -54,7 +54,7 @@ void init_gdt() {
     gdt[4].base_high   = 0;
 
     //TSS
-    install_tss((uint64_t)&kernel_tss);
+    //Initted after the PMM has.
 
     // Setup the pointer
     gdt_ptr.size = sizeof(gdt) - 1;

@@ -15,6 +15,7 @@ void serial_init();
 
 void kprint_char(const char c, uint8_t co);
 void kprint(const char* s);
+void kprintf(const char* __fmt, ...);
 void kprint(const char* s, uint8_t c);
 void kprint_times(int times, const char* s);
 void kprint_times(int times, const char* s, uint8_t c);

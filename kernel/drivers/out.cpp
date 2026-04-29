@@ -1,5 +1,7 @@
 #include "../../include/out.h"
+#include "../../include/kstring.h"
 #include <stdint.h>
+#include <stdarg.h>
 
 static int row = 0;
 static int col = 0;
@@ -144,4 +146,16 @@ void serial_print(const char *s) {
 		while ((inb(0x3F8 + 5) & 0x20) == 0); 
 		outb(0x3F8, s[i]);
 	}
+}
+
+/*out.h: Print a formatted string!*/
+void kprintf(const char *__fmt, ...) {
+	String s;
+	va_list list;
+	va_start(list, __fmt);
+
+	s = fmtString(__fmt, list);
+	kprint(s.cstr());
+	
+	va_end(list);
 }

@@ -143,9 +143,11 @@ void tss_init() {
     memset(&kernel_tss, 0, sizeof(TSS));
 
     for (int i = 0; i < IST_CURRENT_ALLOCATED; i++) {
-        void* stack = kmalloc_page(PAGE_SIZE);
-        kernel_tss.ist[i] = (uint64_t)stack + PAGE_SIZE;
+        void* stack = kmalloc_page(4096); //
+        kernel_tss.ist[i] = (uint64_t)stack + 4096; 
     }
 
     install_tss((uint64_t)&kernel_tss);
+
+    asm volatile("mov $0x28, %ax; ltr %ax");
 }

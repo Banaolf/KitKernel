@@ -2,7 +2,6 @@
 #include "../../../include/io.h"
 #include "../../../include/out.h"
 #include "../../../include/keyboard.h"
-#include "../../../include/gdt.h"
 #include "../../../include/kstring.h"
 
 IDTEntry idt[256];
@@ -25,18 +24,31 @@ void pic_init() {
 	outb(0xA1, 0xFF); 
 
 	uint8_t mask = inb(0x21);
-	mask &= ~(1 << 1); // Clear bit 1 to ENABLE IRQ1
+	mask &= ~(1 << 1);
 	outb(0x21, mask);
 }
 
 void set_idt_gate(int n, uint64_t handler) {
+	int istn;
+	if (n == 8 || n == 13 || n == 14) istn = 1;
 	idt[n].offset_low = (uint16_t)(handler & 0xFFFF);
 	idt[n].selector = 0x08;
-	idt[n].ist = (IST_CURRENT_ALLOCATED-1);
+	idt[n].ist = istn;
 	idt[n].type_attr = 0x8E;
 	idt[n].offset_mid = (uint16_t)((handler >> 16) & 0xFFFF);
 	idt[n].offset_high = (uint32_t)((handler >> 32) & 0xFFFFFFFF);
 	idt[n].reserved = 0;
+}
+
+void breaks(interrupt_frame* frame) {
+	serial_print("Broke!\n");
+
+	kprint_times(COL_MAX, "-");
+	
+	serial_print(fmtString("Vector: %x\nErrCode: %x\nRIP: %x\nCS: %x\nRFLAGS: %x\nRBP %x\n", frame->interrupt_number, frame->error_code, frame->rip, frame->cs, frame->rflags, frame->rbp).cstr());
+	kprintf("Vector: %x\nErrCode: %x\nRIP: %x\nCS: %x\nRFLAGS: %x\nRBP %x\n", frame->interrupt_number, frame->error_code, frame->rip, frame->cs, frame->rflags, frame->rbp);
+
+	halt();
 }
 
 extern "C" uint64_t interrupt_handler_table[256];
@@ -45,13 +57,22 @@ extern "C" void common_interrupt_handler(interrupt_frame* frame) {
 	serial_print("Interrupt Received: ");
 	serial_print(fmtString("%i\n", (int)frame->interrupt_number).cstr());
 	
-	if (frame->interrupt_number == 33) {
-		keyboard_handler_callback();
-	}
-
-	if (frame->interrupt_number >= 32 && frame->interrupt_number <= 47) {
-		if (frame->interrupt_number >= 40) outb(0xA0, 0x20);
-		outb(0x20, 0x20);
+	switch(frame->interrupt_number) {
+		//Recoverable
+		case 3:
+			break;
+		//Not recoverable
+		case 0: case 1: case 2: case 4: case 5: case 6: case 7: case 9: case 10:
+		case 11: case 12: case 13: case 14: case 15: case 16: case 17: //Page fault unrecoverable until I build the handler for it.
+		case 18: case 19: case 20: case 21: case 22: case 23: case 24:
+		case 25: case 26: case 27: case 28: case 29: case 30: case 31: 
+			breaks(frame); break;
+		//IRQ
+		case 32: outb(0x20, 0x20); break;
+		case 33: keyboard_handler_callback(); outb(0x20, 0x20); break;
+		default:
+			serial_print("Received unknown interrupt.\n");
+			break;
 	}
 }
 

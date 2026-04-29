@@ -1,4 +1,5 @@
 #include "../../include/kstring.h"
+#include <stdint.h>
 #include <stdarg.h>
 
 int Strlen(const char *str) {
@@ -249,6 +250,33 @@ String intostr(long long n) {
     buffer[i] = '\0';
     return String(buffer);
 }*/
+char* uint_to_str(uint64_t value, char* buffer) {
+    char* ptr = buffer + 20;
+    *ptr = '\0';
+
+    if (value == 0) {
+        *--ptr = '0';
+        return ptr;
+    }
+
+    while (value > 0) {
+        *--ptr = (value % 10) + '0';
+        value /= 10;
+    }
+
+    return ptr;
+}
+char* uint_to_hex(uint64_t value, char* buffer) {
+    char* ptr = buffer + 18; // "0x" + 16 chars + \0
+    *ptr = '\0';
+    const char* hex_chars = "0123456789ABCDEF";
+    for(int i = 0; i < 16; i++) {
+        *--ptr = hex_chars[value & 0xF];
+        value >>= 4;
+    }
+    *--ptr = 'x'; *--ptr = '0';
+    return ptr;
+}
 String fmtString(const char* fmt, ...) {
     String result;
     va_list list;
@@ -279,6 +307,25 @@ String fmtString(const char* fmt, ...) {
                 while (j < Strlen(argstr)) {
                     result.append(argstr[j]);
                     j++;
+                }
+                break;
+            }
+            case 'u': {
+                uint64_t arg = va_arg(list, uint64_t);
+                char buf[21];
+                char* s = uint_to_str(arg, buf);
+                while (*s) {
+                    result.append(*s++);
+                }
+                break;
+            }
+            case 'x': {
+                uint64_t arg = va_arg(list, uint64_t);
+                char buf[19];
+                char* s = uint_to_hex(arg, buf);
+                
+                while (*s) {
+                    result.append(*s++);
                 }
                 break;
             }
