@@ -29,7 +29,7 @@ void paging_init() {
     
     if (!local_pml4) {
         serial_print("Pml4 couldn't be allocated!\n");
-        while(1) { asm("hlt"); } 
+        while(1) { asm volatile("hlt"); }
     }
 
     serial_print("Zeroing pml4\n");
@@ -58,4 +58,6 @@ void heap_init(uint64_t pml4_phys) {
         void* phys = kmalloc_page(4096);
         map_page(pml4_phys, heap_virtual_start + i, (uint64_t)phys, WRITABLE);
     }
+    serial_print("Heap initiated!\n");
+    has_heap_initted = true;
 }

@@ -7,6 +7,9 @@
 #define numbers "1234567890"
 #define operators "/*-+"
 
+#define NOT_FOUND -2
+#define STRING_BAD -3
+
 int Strlen(const char* str);
 
 namespace checks {
@@ -64,6 +67,8 @@ public:
     void backspace(const int times);
     void clear();
     const char* cstr() const;
+    String* split(const char __splitwith) const;
+    bool find(const char *__tofind) const;
 };
 
 String fmtString(const char* fmt, ...);

@@ -114,6 +114,7 @@ void* kmalloc_page(size_t size) {
     uint64_t consecutive_found = 0;
 
     for (uint64_t i = last_found; i < Bitmap.total_pages; i++) {
+        if (Bitmap.bitmap[i] == 0xFFFFFFFFFFFFFFFF) continue;
         if (is_bit_free(i)) consecutive_found++;
         else consecutive_found = 0;
 
@@ -126,7 +127,7 @@ void* kmalloc_page(size_t size) {
         }
     }
     serial_print("Didn't find match.\n");
-    if (last_found != 0) last_found = 0;
+    if (last_found != 0) {serial_print("Retrying...\n"); last_found = 0; return kmalloc_page(size);}
     return nullptr;
 }
 

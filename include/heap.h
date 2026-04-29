@@ -1,6 +1,7 @@
 #pragma once
 #include <stdint.h>
-#include <stdbool.h>
+
+inline bool has_heap_initted = false;
 
 inline uint64_t pml4_idx(uint64_t virt) { return (virt >> 39) & 0x1FF; }
 inline uint64_t pdpt_idx(uint64_t virt) { return (virt >> 30) & 0x1FF; }
@@ -43,3 +44,26 @@ void heap_init(uint64_t pml4_phys);
  * within the specified PML4 table.
  */
 void map_page(uint64_t pml4_phys, uint64_t virt, uint64_t phys, uint64_t flags);
+
+#include <stddef.h>
+/**
+ * kmalloc: Allocates x amount of space
+ * into the memory and gives you the pointer to it
+*/
+void* kmalloc(size_t size);
+/**
+ * kfree: Frees x pointer from the memory
+*/
+void kfree(void* ptr);
+/**
+ * kzero: Zeroes out a pointer
+*/
+void kzero(void* ptr);
+/**
+ * kcallor: Allocates a pointer full of zeroes
+*/
+void* kcalloc(size_t nmemb, size_t size);
+/**
+ * krealloc: Reallocates a pointer, with a new size and same data. Doesn't do nothing if no space was found.
+*/
+void* krealloc(void* ptr, size_t size);

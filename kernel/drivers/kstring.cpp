@@ -1,4 +1,5 @@
 #include "../../include/kstring.h"
+#include "../../include/heap.h"
 #include <stdint.h>
 #include <stdarg.h>
 
@@ -198,6 +199,14 @@ void String::backspace(const int times) {
         len -= times;
         buffer[len] = '\0';
     }
+}
+String* String::split(const char __splitwith) const {
+    if (!has_heap_initted) return nullptr;
+
+    //String* spt = kmalloc
+}
+bool String::find(const char *__tofind) const {
+    
 }
 String intostr(long long n) {
     if (n == 0) return String("0");
