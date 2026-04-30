@@ -46,6 +46,15 @@ Type Vector<Type>::get() {
 	return self->arr[self->childcount-1];
 }
 
+//Get an item from the array at a specific index O(1)
+template<typename Type>
+Type Vector<Type>::getAt(int __idx) {
+	if (self->childcount == 0) {self->bits |= BitMeaning::Empty; return;}
+	if (__idx >= self->childcount) return self->arr[self->childcount-1];
+	else if (__idx < 0) return self->arr[0];
+	return self->arr[__idx];
+}
+
 //Get the byte size of the vector
 template<typename Type>
 size_t Vector<Type>::getSize() {

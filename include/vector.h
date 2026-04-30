@@ -17,6 +17,7 @@ public:
     void push(Type x);
     void pop(Type* tpt);
     Type get();
+    Type getAt(int __idx);
     size_t getSize();
     int getLength();
 

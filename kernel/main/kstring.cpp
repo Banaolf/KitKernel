@@ -209,26 +209,54 @@ void String::appendAt(const char c, int place) {
     len++;
 }
 void String::appendAt(const char* str, int place) {
-    for (int i = 0; i < Strlen(str); i++) {
-        this->appendAt(str[i], place);
-        place++;
+    if (!str || place < 0 || place > len) return;
+    
+    size_t insert_len = Strlen(str);
+    char* new_buffer = (char*)krealloc(this->buffer, len + insert_len + 1);
+    if (!new_buffer) return;
+    this->buffer = new_buffer;
+
+    for (int i = len; i >= place; i--) {
+        this->buffer[i + insert_len] = this->buffer[i];
     }
+
+    kmcopy((void*)str, (void*)(this->buffer + place), insert_len);
+    
+    len += insert_len;
 }
 void String::clear() {
     len = 0;
-    buffer[0] = '\0';
+    
+    char* new_buffer = (char*)krealloc(this->buffer, 1);
+    if (new_buffer) {
+        this->buffer = new_buffer;
+    }
+    this->buffer[0] = '\0';
 }
 void String::backspace() {
     if (len > 0) {
         len -= 1;
-        buffer[len] = '\0';
+        char* new_buffer = (char*)krealloc(this->buffer, len + 1);
+        if (new_buffer) {
+            this->buffer = new_buffer;
+        }
+        this->buffer[len] = '\0';
     }
 }
 void String::backspace(const int times) {
-    if (len - times > 0) {
-        len -= times;
-        buffer[len] = '\0';
+    if (times <= 0) return;
+    
+    if (times >= len) {
+        this->clear();
+        return;
     }
+
+    len -= times;
+    char* new_buffer = (char*)krealloc(this->buffer, len + 1);
+    if (new_buffer) {
+        this->buffer = new_buffer;
+    }
+    this->buffer[len] = '\0';
 }
 String String::substr(int i1, int i2) const {
     if (i1 < 0 || i1 >= this->len) i1 = 0;
