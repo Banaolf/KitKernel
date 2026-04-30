@@ -18,3 +18,18 @@ void restart() {
     asm volatile("lidt 0");
     asm volatile("int $0");
 }
+
+//Reboots right back into the firmware
+void legacy_tofirmware() {
+    uint16_t* warm_reset_vector = (uint16_t*)0x0472;
+    *warm_reset_vector = 0x1234;
+    
+    uint8_t good = 0x02;
+    while (good & 0x02) {
+        good = inb(0x64);
+    }
+    outb(0x64, 0xFE);
+    
+    asm volatile("cli");
+    asm volatile("int $3"); 
+}

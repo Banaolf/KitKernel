@@ -42,7 +42,27 @@ void shmain(char* src) {
             if (lxdat.isstring(kwat(0))) {
                 i++;
                 if (!lxdat.istype(TokenType::flag)) {kprint("Expected one flag."); break;}
-                if (lxdat.)
+                if (lxdat.isflag('o')) {
+                    shutdown();
+                } else if (lxdat.isflag('r')) {
+                    restart();
+                } else if (lxdat.isflag('s')) {
+                    legacy_tofirmware();
+                } else {
+                    kprint("Unknown flag"); break;
+                }
+                i++;
+                if (!lxdat.istype(TokenType::eoc)) {
+                    kprint("No more arguments needed.");
+                    break;
+                }
+            } else if (lxdat.isstring(kwat(1))) {
+                i++;
+                if (!lxdat.istype(TokenType::eoc)) {
+                    kprint("Expected end of command.");
+                    break;
+                }
+                scroll();
             }
         }
         else if (lxdat.istype(TokenType::eoc)) {continue;}

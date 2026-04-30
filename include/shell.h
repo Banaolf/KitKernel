@@ -30,7 +30,8 @@ public:
     inline bool istype(TokenType __expected) {return this->type == __expected;}
     inline bool isstring(char *__expected) {return this->contents.equals(__expected);}
     inline bool isstring(String &__expected) {return this->contents.equals(__expected);}
-    inline boot isflag(const char __c) {return this->contents.equals(fmtString("-%c", ))}
+    inline bool isflag(const char __c) {return this->contents.equals(fmtString("-%c", __c));}
+    inline bool isflag(const char *__s) {return this->contents.equals(fmtString("-%s", __s));}
 };
 
 void shmain();
