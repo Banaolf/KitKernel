@@ -7,8 +7,10 @@ static Vector<Token> lex(char* src) {
 
     for (int i = 0; i < source.length(); i++) {
         char c = source.get(i);
-        if (c == '"') {
-
+        if (checks::isAlpha(c)) {
+            while (i < source.length() && checks::isAlphaNumerical((c = source.get(i)))) {
+                
+            }
         }
     }
 
