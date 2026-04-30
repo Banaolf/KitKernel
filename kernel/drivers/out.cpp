@@ -35,7 +35,7 @@ void enable_cursor(uint8_t cursor_start, uint8_t cursor_end) {
 	outb(0x3D5, (inb(0x3D5) & 0xE0) | cursor_end);
 }
 
-static void scroll() {
+void scroll() {
     for (int y = 1; y < 25; y++) {
         for (int x = 0; x < 80; x++) {
             VGA[(y - 1) * 80 + x] = VGA[y * 80 + x];

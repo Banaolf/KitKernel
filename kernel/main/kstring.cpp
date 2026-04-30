@@ -385,6 +385,10 @@ String fmtString(const char* fmt, ...) {
                 }
                 break;
             }
+            case 'c': {
+                int arg = va_arg(list, int);
+                result.append((char)arg);
+            }
             case 'i': { //my format my rules (integer)
                 int arg = va_arg(list, int);
                 const char* argstr = intostr(arg).cstr();
