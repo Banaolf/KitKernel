@@ -61,7 +61,10 @@ public:
     bool equals(const String& other) const;
     bool find(const char* str) const;
     bool find(const String& str) const;
-    char get(int index) const {return buffer[index];}
+    bool startsWith(const char __c) const;
+    bool endsWith(const char __c) const;
+    char get(int index) const {if (index < 0 || index >= this->len) return this->back(); else return buffer[index];}
+    char back() const {return buffer[len-1];}
     void append(const char c);
     void append(const char* str);
     void appendAt(const char c, int place);

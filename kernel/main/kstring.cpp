@@ -179,6 +179,12 @@ bool String::find(const char* sub) const {
     }
     return false;
 }
+bool String::startsWith(const char __c) const {
+    return this->buffer[0] == __c;
+}
+bool String::endsWith(const char __c) const {
+    return  this->buffer[this->len-1] == __c;
+}
 void String::append(const char c) {
     char* new_buffer = (char*)krealloc(buffer, len + 2);
     
