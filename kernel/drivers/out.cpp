@@ -36,16 +36,19 @@ void enable_cursor(uint8_t cursor_start, uint8_t cursor_end) {
 }
 
 static void scroll() {
-	for (int y = 1; y < ROW_MAX; y++) {
-		for (int x = 0; x < 80; x++) {
-			VGA[(y - 1) * 80 + x] = VGA[y * 80 + x];
-		}
-	}
-	for (int x = 0; x < 80; x++) {
-		VGA[(ROW_MAX - 1) * 80 + x] = (uint16_t)' ' | ((uint16_t)0x0F << 8);
-	}
-	row = ROW_MAX - 1;
-	col = 0;
+    for (int y = 1; y < 25; y++) {
+        for (int x = 0; x < 80; x++) {
+            VGA[(y - 1) * 80 + x] = VGA[y * 80 + x];
+        }
+    }
+
+    uint16_t blank = (uint16_t)' ' | ((uint16_t)0x0F << 8);
+    for (int x = 0; x < 80; x++) {
+        VGA[24 * 80 + x] = blank;
+    }
+
+    row = 24;
+    col = 0;
 }
 
 #define TAB_SIZE 4

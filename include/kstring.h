@@ -45,19 +45,22 @@ public:
     bool in (const char* string, const int starterIndex) const;
     int inCount (const char* string) const;
 };
+#include "vector.h"
 class String {
 private:
-    char buffer[256];
+    char* buffer;
     int len;
 public:
     String();
     String(const char* str);
+    String(const String& other);
+    ~String();
     
     int length() const {return len;}
     bool equals(const char* str) const;
     bool equals(const String& other) const;
-    bool substr(const char* str) const;
-    bool substr(const String& str) const;
+    bool find(const char* str) const;
+    bool find(const String& str) const;
     char get(int index) const {return buffer[index];}
     void append(const char c);
     void append(const char* str);
@@ -67,8 +70,8 @@ public:
     void backspace(const int times);
     void clear();
     const char* cstr() const;
-    String* split(const char __splitwith) const;
-    bool find(const char *__tofind) const;
+    Vector<String> split(const char __splitwith) const;
+    String substr(const int i1, const int i2) const;
 };
 
 String fmtString(const char* fmt, ...);

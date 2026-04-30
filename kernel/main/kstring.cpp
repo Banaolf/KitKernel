@@ -1,5 +1,5 @@
 #include "../../include/kstring.h"
-#include "../../include/heap.h"
+#include "../../include/vector.h"
 #include <stdint.h>
 #include <stdarg.h>
 
@@ -111,14 +111,42 @@ int character::inCount(const char* str) const {
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 String::String() : len(0) {
-    buffer[0] = '\0';
+    buffer = (char*)kmalloc(1);
+    if (buffer) {
+        buffer[0] = '\0';
+    }
 }
 String::String(const char* str) {
-    len = Strlen(str);
-    for (int i = 0; i < len; i++) {
-        buffer[i] = str[i];
+    if (!str) {
+        len = 0;
+        buffer = (char*)kmalloc(1);
+        buffer[0] = '\0';
+        return;
     }
-    buffer[len] = '\0';
+
+    len = Strlen(str);
+    // Allocate space for characters + null terminator
+    buffer = (char*)kmalloc(len + 1);
+
+    if (buffer) {
+        // Use your new kmcopy!
+        kmcopy((void*)str, (void*)buffer, len);
+        buffer[len] = '\0';
+    }
+}
+String::String(const String& other) {
+    len = other.len;
+    buffer = (char*)kmalloc(len + 1);
+    if (buffer) {
+        kmcopy((void*)other.buffer, (void*)buffer, len + 1);
+    }
+}
+String::~String() {
+    if (buffer) {
+        kfree(buffer);
+        buffer = nullptr;
+    }
+    len = 0;
 }
 const char* String::cstr() const {
     return this->buffer;
@@ -133,7 +161,7 @@ bool String::equals(const char* str) const {
 bool String::equals(const String& str) const {
     return String::equals(str.cstr());
 }
-bool String::substr(const char* sub) const {
+bool String::find(const char* sub) const {
     int subLen = Strlen(sub);
     int len = Strlen(buffer);
     
@@ -152,31 +180,33 @@ bool String::substr(const char* sub) const {
     return false;
 }
 void String::append(const char c) {
-    if (len < 255) {
+    char* new_buffer = (char*)krealloc(buffer, len + 2);
+    
+    if (new_buffer) {
+        buffer = new_buffer;
         buffer[len] = c;
+        buffer[len + 1] = '\0';
         len++;
-        buffer[len] = '\0';
     }
 }
 void String::append(const char* str) {
-    int i = 0;
-    while (str[i] != '\0') {
+    int len = Strlen(str);
+    for (int i = 0; i < len; i++)
         append(str[i]);
-        i++;
-    }
 }
 void String::appendAt(const char c, int place) {
-    if (place > Strlen(this->buffer)) return;
-    if (place == len) this->append(c);
-    if (len < 255) {
-        len++;
-        int i = place;
-        while (i <= Strlen(this->buffer)) {
-            this->buffer[i+1] = this->buffer[i];
-            i++;
-        }
-        this->buffer[place] = c;
+    if (place < 0 || place > len) return;
+
+    char* new_buffer = (char*)krealloc(this->buffer, len + 2);
+    if (!new_buffer) return;
+    this->buffer = new_buffer;
+
+    for (int i = len; i >= place; i--) {
+        this->buffer[i + 1] = this->buffer[i];
     }
+
+    this->buffer[place] = c;
+    len++;
 }
 void String::appendAt(const char* str, int place) {
     for (int i = 0; i < Strlen(str); i++) {
@@ -200,10 +230,25 @@ void String::backspace(const int times) {
         buffer[len] = '\0';
     }
 }
-String* String::split(const char __splitwith) const {
-    if (!has_heap_initted) return nullptr;
-
-    //String* spt = kmalloc
+String String::substr(int i1, int i2) const {
+    if (i1 < 0 || i1 >= this->len) i1 = 0;
+    if (i2 < 2 || i2 >= this->len) i2 = this->len-1;
+    String rslt;
+    for (int idx = i1; idx <= i2; idx++) {
+        rslt.append(this->buffer[idx]);
+    }
+    return rslt;
+}
+Vector<String> String::split(const char __splitwith) const {
+    Vector<String> rvl;
+    int last_found = 0;
+    for (int i = 0; i < this->len; i++) {
+        if (this->buffer[i] == __splitwith) {
+            rvl.push(this->substr(last_found, i));
+            last_found = i+1;
+        }
+    }
+    return rvl;
 }
 String intostr(long long n) {
     if (n == 0) return String("0");

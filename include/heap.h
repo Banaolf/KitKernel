@@ -1,6 +1,5 @@
 #pragma once
 #include <stdint.h>
-
 #define HEAPVSTART 0x100000000
 #define HEAPSIZE 512 * 512
 #define MIN_ALLOC_SIZE 8
