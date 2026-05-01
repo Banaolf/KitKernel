@@ -4,6 +4,7 @@
 
 #define ROW_MAX 24
 #define COL_MAX 79
+#define COMMAND_START 1
 
 inline uint16_t* VGA = (uint16_t*)0xB8000;
 inline uint16_t* vga = (uint16_t*)0x3D4;
@@ -14,6 +15,7 @@ void serial_print(const char* s);
 void serial_init();
 
 void kprint_char(const char c, uint8_t co=0x0F);
+void request_print_char(const char c, uint8_t color=0x0F);
 void kprint(const char* s, uint8_t c=0x0F);
 void kprintf(const char* __fmt, ...);
 inline void kprintln(const char* s) {kprint(s); kprint_char('\n', 0x0f);}
@@ -24,3 +26,6 @@ void update_cursor();
 void disable_cursor();
 void enable_cursor(uint8_t cursor_start, uint8_t cursor_end);
 void scroll();
+
+#include "kstring.h"
+String kgets();

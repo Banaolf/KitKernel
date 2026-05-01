@@ -155,3 +155,16 @@ void kprintf(const char *__fmt, ...) {
 	
 	va_end(list);
 }
+
+/*out.h: Get the current line as a string*/
+String kgets() {
+	String result;
+	int staticol = col;
+	col = COMMAND_START;
+	while (col <= staticol) {
+		result.append(VGA[pos]);
+		col++;
+		update_pos();
+	}
+	return result;
+}

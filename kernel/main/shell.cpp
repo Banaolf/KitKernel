@@ -7,7 +7,7 @@
 
 typedef unsigned char uint8_t;
 
-static Vector<Token> lex(char* src) {
+static Vector<Token> lex(const char* src) {
     Vector<Token> stream;
     String source(src);
 
@@ -31,7 +31,7 @@ static Vector<Token> lex(char* src) {
 
 #define kwat(i) keywords[i]
 #define lxdat lxd.getAt(i)
-void shmain(char* src) {
+void shmain(const char* src) {
     Vector<Token> lxd = lex(src);
     
     for (int i = 0; i < lxd.getLength(); i++) {
@@ -69,4 +69,15 @@ void shmain(char* src) {
         else {kprint("Expected command."); break;}
     }
     kprint_char('\n');
+}
+
+/*shell.h: Execute the shell before printing a newline.*/
+void request_print_char(const char c, uint8_t co) {
+    if (c == '\n') {
+        String s = kgets();
+        shmain(s.cstr());
+        kprint_char('\n');
+    } else {
+        kprint_char(c, co);
+    }
 }
