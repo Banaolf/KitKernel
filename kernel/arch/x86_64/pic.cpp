@@ -18,6 +18,7 @@ void pic_init() {
     outb(0xA1, 0xFF); 
 
     uint8_t mask = inb(0x21);
+    mask &= ~(1 << 0);
     mask &= ~(1 << 1);
     outb(0x21, mask);
 }

@@ -2,6 +2,7 @@
 #include "../../../include/out.h"
 #include "../../../include/keyboard.h"
 #include "../../../include/kstring.h"
+#include "../../../include/pit.h"
 
 IDTEntry idt[256];
 IDTR idtr;
@@ -43,7 +44,7 @@ extern "C" void common_interrupt_handler(interrupt_frame* frame) {
         case 18: case 19: case 20: case 21: case 22: case 23: case 24:
         case 25: case 26: case 27: case 28: case 29: case 30: case 31: 
             breaks(frame); break;
-        case 32: outb(0x20, 0x20); break;
+        case 32: pit_handler(); break;
         case 33: keyboard_handler_callback(); outb(0x20, 0x20); break;
         default:
             serial_print("Received unknown interrupt.\n");
