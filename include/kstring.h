@@ -54,6 +54,7 @@ public:
     String();
     String(const char* str);
     String(const String& other);
+    String& operator=(const String& other);
     ~String();
     
     int length() const {return len;}

@@ -1,6 +1,5 @@
 #pragma once
 #define DEBUG_MODE 1
-#define NULL ((void*)0)
 #include <stdint.h>
 #ifdef __cplusplus
 uint8_t get_ScancodeMapID();
