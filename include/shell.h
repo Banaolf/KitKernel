@@ -34,4 +34,4 @@ public:
     inline bool isflag(const char *__s) {return this->contents.equals(fmtString("-%s", __s));}
 };
 
-void shmain();
+void shmain(const char *__src);

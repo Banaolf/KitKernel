@@ -43,6 +43,9 @@
 #define CAPSLOCK 0x9F
 #define NUMLOCK 0xA0
 
+extern bool newlined;
+extern bool khas_interrupted;
+
 void keyboard_init();
 uint8_t getModifiers();
 void keyboard_handler_callback();

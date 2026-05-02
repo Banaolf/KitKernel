@@ -10,6 +10,13 @@ int Strlen(const char *str) {
 	}
 	return i;
 }
+String Strcpy(const String& toCopy) {
+	String result;
+	for (int i = 0; i < toCopy.length(); i++) {
+		result.append(toCopy.get(i));
+	}
+	return result;
+}
 
 bool checks::isUppercase(const char c) {
 	for (int i = 0; i < Strlen(uppercase); i++) {
@@ -165,6 +172,16 @@ String& String::operator=(const String& other) {
 
 	return *this;
 }
+String String::operator+(const String& other) {
+	String s = Strcpy(*this);
+	s.append(other);
+	return s;
+}
+void String::operator+=(const String& other) {this->append(other);}
+bool String::operator==(const String& other) {return this->equals(other);}
+bool String::operator==(const int& other) {return this->length() == other;}
+bool String::operator!=(const String& other) {return !this->equals(other);}
+bool String::operator!=(const int& other) {return this->length() != other;}
 const char* String::cstr() const {
 	return this->buffer;
 }
@@ -217,6 +234,11 @@ void String::append(const char* str) {
 	for (int i = 0; i < len; i++)
 		append(str[i]);
 }
+void String::append(const String& str) {
+	int len = Strlen(str.cstr());
+	for (int i = 0; i < len; i++)
+		this->append(str.get(i));
+}
 void String::appendAt(const char c, int place) {
 	if (place < 0 || place > len) return;
 
@@ -244,6 +266,22 @@ void String::appendAt(const char* str, int place) {
 	}
 
 	kmcopy((void*)str, (void*)(this->buffer + place), insert_len);
+	
+	len += insert_len;
+}
+void String::appendAt(const String& str, int place) {
+	if (place < 0 || place > len) return;
+	
+	size_t insert_len = Strlen(str.cstr());
+	char* new_buffer = (char*)krealloc(this->buffer, len + insert_len + 1);
+	if (!new_buffer) return;
+	this->buffer = new_buffer;
+
+	for (int i = len; i >= place; i--) {
+		this->buffer[i + insert_len] = this->buffer[i];
+	}
+
+	kmcopy((void*)&str, (void*)(this->buffer + place), insert_len);
 	
 	len += insert_len;
 }

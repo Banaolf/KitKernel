@@ -33,9 +33,6 @@ void breaks(interrupt_frame* frame) {
 }
 
 extern "C" void common_interrupt_handler(interrupt_frame* frame) {
-    serial_print("Interrupt Received: ");
-    serial_print(fmtString("%i\n", (int)frame->interrupt_number).cstr());
-    
     switch(frame->interrupt_number) {
         case 3:
             break;

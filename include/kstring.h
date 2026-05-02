@@ -55,6 +55,12 @@ public:
     String(const char* str);
     String(const String& other);
     String& operator=(const String& other);
+    String operator+(const String& other);
+    void operator+=(const String& other);
+    bool operator==(const String& other);
+    bool operator==(const int& other);
+    bool operator!=(const String& other);
+    bool operator!=(const int& other);
     ~String();
     
     int length() const {return len;}
@@ -68,8 +74,10 @@ public:
     char back() const {return buffer[len-1];}
     void append(const char c);
     void append(const char* str);
+    void append(const String& str);
     void appendAt(const char c, int place);
     void appendAt(const char* str, int place);
+    void appendAt(const String& str, int place);
     void backspace();
     void backspace(const int times);
     void clear();

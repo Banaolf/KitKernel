@@ -30,7 +30,7 @@ public:
     }
     //Pop an item from the array (get and delete) O(1)
     void pop(Type* tpt) {
-        if (this->childcount == 0) {this->bits |= BitMeaning::Empty; return;}
+        if (this->childcount == 0) {this->bits |= (uint8_t)BitMeaning::Empty; return;}
         this->childcount--;
         *tpt = this->arr[this->childcount];
         if (this->size/2 > (sizeof(Type) * this->childcount)) {
@@ -42,16 +42,16 @@ public:
         }
     }
     //Get an item from the array O(1)
-    Type get() {
-        if (this->childcount == 0) {this->bits |= BitMeaning::Empty; return;}
+    Type* get() {
+        if (this->childcount == 0) {this->bits |= (uint8_t)BitMeaning::Empty; return nullptr;}
         return this->arr[this->childcount-1];
     }
     //Get an item from the array at a specific index O(1)
-    Type getAt(int __idx) {
-        if (this->childcount == 0) {this->bits |= BitMeaning::Empty; return;}
-        if (__idx >= this->childcount) return this->arr[this->childcount-1];
-        else if (__idx < 0) return this->arr[0];
-        return this->arr[__idx];
+    Type* getAt(int __idx) {
+        if (this->childcount == 0) {this->bits |= (uint8_t)BitMeaning::Empty; return nullptr;}
+        if (__idx >= this->childcount) return &this->arr[this->childcount-1];
+        else if (__idx < 0) return &this->arr[0];
+        return &this->arr[__idx];
     }
     //Get the byte size of the vector
     size_t getSize() {
@@ -67,6 +67,6 @@ public:
 	};
     //Checks if it has x bit.
     bool has_bit(BitMeaning bit) {
-        return this->bits & bit;
+        return this->bits & (uint8_t)bit;
     }
 };

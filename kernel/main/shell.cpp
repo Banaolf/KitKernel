@@ -14,7 +14,7 @@ static Vector<Token> lex(const char* src) {
     Vector<String> result = source.split(' '); //No string support yet
 
     for (int i = 0; i < result.getLength(); i++) {
-        String current = result.getAt(i);
+        String current = *result.getAt(i);
         if (current.startsWith('-')) {
             stream.push(Token(TokenType::flag, current));
         } else if (isKeyword<String>(current)) {
@@ -35,49 +35,38 @@ void shmain(const char* src) {
     Vector<Token> lxd = lex(src);
     
     for (int i = 0; i < lxd.getLength(); i++) {
-        if (lxdat.istype(TokenType::keyword)) {
+        if (lxdat->istype(TokenType::keyword)) {
             i++;
-            if (lxdat.istype(TokenType::keyword)) {kprint("Cannot have more than two commands."); break;}
+            if (lxdat->istype(TokenType::keyword)) {kprint("Cannot have more than two commands."); break;}
             i--;
-            if (lxdat.isstring(kwat(0))) {
+            if (lxdat->isstring(kwat(0))) {
                 i++;
-                if (!lxdat.istype(TokenType::flag)) {kprint("Expected one flag."); break;}
-                if (lxdat.isflag('o')) {
+                if (!lxdat->istype(TokenType::flag)) {kprint("Expected one flag."); break;}
+                if (lxdat->isflag('o')) {
                     shutdown();
-                } else if (lxdat.isflag('r')) {
+                } else if (lxdat->isflag('r')) {
                     restart();
-                } else if (lxdat.isflag('s')) {
+                } else if (lxdat->isflag('s')) {
                     legacy_tofirmware();
                 } else {
                     kprint("Unknown flag"); break;
                 }
                 i++;
-                if (!lxdat.istype(TokenType::eoc)) {
+                if (!lxdat->istype(TokenType::eoc)) {
                     kprint("No more arguments needed.");
                     break;
                 }
-            } else if (lxdat.isstring(kwat(1))) {
+            } else if (lxdat->isstring(kwat(1))) {
                 i++;
-                if (!lxdat.istype(TokenType::eoc)) {
+                if (!lxdat->istype(TokenType::eoc)) {
                     kprint("Expected end of command.");
                     break;
                 }
                 scroll();
             }
         }
-        else if (lxdat.istype(TokenType::eoc)) {continue;}
+        else if (lxdat->istype(TokenType::eoc)) {continue;}
         else {kprint("Expected command."); break;}
     }
     kprint_char('\n');
-}
-
-/*shell.h: Execute the shell before printing a newline.*/
-void request_print_char(const char c, uint8_t co) {
-    if (c == '\n') {
-        String s = kgets();
-        shmain(s.cstr());
-        kprint_char('\n');
-    } else {
-        kprint_char(c, co);
-    }
 }

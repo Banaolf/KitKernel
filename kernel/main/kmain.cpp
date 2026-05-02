@@ -5,12 +5,20 @@
 #include "../../include/idtpic.h"
 #include "../../include/heap.h"
 #include "../../include/pmm.h"
+#include "../../include/shell.h"
+#include "../../include/pit.h"
 #include "../../include/io.h"
 
 extern uint64_t g_pml4_phys;
-
-extern "C" void kernel_main(uint64_t magic, uint64_t* multiboot_address) {
+extern "C" {
+void* __dso_handle = 0;
+int __cxa_atexit(void (*f)(void *), void *p, void *d) { (void)f; (void)p; (void)d; return 0; }
+void kernel_main(uint64_t magic, uint64_t* multiboot_address) {
 	serial_init();
+	if (magic != 0x36d76289) {
+		serial_print("Magic number does not match!\n");
+		halt();
+	}
 	serial_print("Welcome!\n");
 	init_gdt();
 	serial_print("Initted GDT\n");
@@ -31,19 +39,29 @@ extern "C" void kernel_main(uint64_t magic, uint64_t* multiboot_address) {
 
 	keyboard_init();
 	serial_print("Initted Keyboard\n");
+	pit_init(100);
+	serial_print("Initted PIT(Programable Interval Timer)\n");
 	asm volatile("sti");
 	serial_print("Ended Initiating!\n");
 
-	if (magic != 0x36d76289) {
-		serial_print("Magic number does not match!\n");
-		halt();
-	}
-
 	serial_print("Magic number is correct.\n");
 	kprint("Welcome to Kit Kernel!\n");
-	kprint_char('>'); //kprint_char is generally faster
+	kprint_char('>', 0x0F);
 
 	while (1) {
-		asm volatile("hlt");
+		if (newlined) {
+			newlined = false;
+			String s = kgets();
+			shmain(s.cstr());
+			kprint_char('>', 0x0F);
+		}
+
+		khas_interrupted = false; 
+		while (!khas_interrupted) {
+			asm volatile("hlt");
+		}
 	}
+
+	halt();
+}
 }
