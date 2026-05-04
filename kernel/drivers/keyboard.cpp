@@ -83,7 +83,6 @@ void keyboard_handler_callback() {
 	serial_print("Callback\n");
 	khas_interrupted = true;
 	uint8_t scancode = inb(0x60);
-	if (newlined) newlined = false;
 
 	if (scancode == 0xE0) {
 		is_extended = true;
@@ -101,7 +100,6 @@ void keyboard_handler_callback() {
 	if (result != 0) {
 		if (result == '\n') newlined = true;
 		kprint_char(result, 0x0F);
-		khas_interrupted = false;
 	}
 }
 

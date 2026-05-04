@@ -10,6 +10,9 @@ typedef unsigned char uint8_t;
 static Vector<Token> lex(const char* src) {
     Vector<Token> stream;
     String source(src);
+    source.lstrip('>');
+    source.strip(' ');
+    serial_print(source.cstr());
 
     Vector<String> result = source.split(' '); //No string support yet
 

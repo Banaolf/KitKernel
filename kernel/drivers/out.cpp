@@ -168,3 +168,20 @@ String kgets() {
 	}
 	return result;
 }
+
+/*out.h: Get a line from a row*/
+String kgets_at_row(int target_row) {
+    String result;
+    for (int c = 0; c < 80; c++) {
+        uint16_t data = VGA[target_row * 80 + c];
+        char ch = (char)(data & 0xFF);
+        if (ch == '\0') break;
+        result.append(ch);
+    }
+    return result;
+}
+
+/*out.h: Get a pointer to the current row*/
+int& currentRow() {
+	return row;
+}

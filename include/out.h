@@ -26,6 +26,7 @@ void update_cursor();
 void disable_cursor();
 void enable_cursor(uint8_t cursor_start, uint8_t cursor_end);
 void scroll();
+int& currentRow();
 
 #include "kstring.h"
 String kgets();
