@@ -7,7 +7,7 @@ uint8_t modifiers = 0;
 
 #include "../../include/globals.h"
 
-bool newlined = false;
+volatile bool newlined = false;
 bool khas_interrupted = false;
 
 unsigned char handle_normal(uint8_t scancode) {
@@ -101,7 +101,6 @@ void keyboard_handler_callback() {
 	if (result != 0) {
 		if (result == '\n') newlined = true;
 		kprint_char(result, 0x0F);
-		khas_interrupted = false;
 	}
 }
 

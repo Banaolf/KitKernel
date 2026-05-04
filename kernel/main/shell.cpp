@@ -4,69 +4,66 @@
 #include "../../include/shutdown.h"
 #include "../../include/vector.h"
 
-
-typedef unsigned char uint8_t;
-
 static Vector<Token> lex(const char* src) {
     Vector<Token> stream;
     String source(src);
 
-    Vector<String> result = source.split(' '); //No string support yet
+    Vector<String> result = source.split(' '); 
 
     for (int i = 0; i < result.getLength(); i++) {
-        String current = *result.getAt(i);
-        if (current.startsWith('-')) {
-            stream.push(Token(TokenType::flag, current));
-        } else if (isKeyword<String>(current)) {
-            stream.push(Token(TokenType::keyword, current));
+        String* current = result.getAt(i);
+        
+        if (current == nullptr || current->length() == 0) continue;
+
+        if (current->startsWith('-')) {
+            stream.push(Token(TokenType::flag, *current));
+        } else if (isKeyword<String>(*current)) {
+            stream.push(Token(TokenType::keyword, *current));
         } else {
-            stream.push(Token(TokenType::word, current));
+            stream.push(Token(TokenType::word, *current));
         }
     }
-    String eoc = String("\xEC");
-    stream.push(Token(TokenType::eoc, eoc));
-
+    result.push("\xEC");
+    String* tmp = nullptr; result.pop(tmp);
+    stream.push(Token(TokenType::eoc, *tmp));
     return stream;
 }
 
-#define kwat(i) keywords[i]
-#define lxdat lxd.getAt(i)
 void shmain(const char* src) {
     Vector<Token> lxd = lex(src);
-    
-    for (int i = 0; i < lxd.getLength(); i++) {
-        if (lxdat->istype(TokenType::keyword)) {
-            i++;
-            if (lxdat->istype(TokenType::keyword)) {kprint("Cannot have more than two commands."); break;}
-            i--;
-            if (lxdat->isstring(kwat(0))) {
+    int i = 0;
+
+    while (i < lxd.getLength()) {
+        Token* tok = lxd.getAt(i);
+
+        if (tok == nullptr || tok->istype(TokenType::eoc)) {
+            break;
+        }
+
+        if (tok->istype(TokenType::keyword)) {
+            if (tok->isstring(keywords[0])) {
                 i++;
-                if (!lxdat->istype(TokenType::flag)) {kprint("Expected one flag."); break;}
-                if (lxdat->isflag('o')) {
-                    shutdown();
-                } else if (lxdat->isflag('r')) {
-                    restart();
-                } else if (lxdat->isflag('s')) {
-                    legacy_tofirmware();
+                Token* flagTok = lxd.getAt(i);
+                
+                if (flagTok != nullptr && flagTok->istype(TokenType::flag)) {
+                    if (flagTok->isflag('o')) shutdown();
+                    else if (flagTok->isflag('r')) restart();
+                    else if (flagTok->isflag('s')) legacy_tofirmware();
+                    else kprint("Unknown flag.\n");
                 } else {
-                    kprint("Unknown flag"); break;
+                    kprint("Error: 'power' requires a flag (-o, -r, -s).\n");
                 }
-                i++;
-                if (!lxdat->istype(TokenType::eoc)) {
-                    kprint("No more arguments needed.");
-                    break;
-                }
-            } else if (lxdat->isstring(kwat(1))) {
-                i++;
-                if (!lxdat->istype(TokenType::eoc)) {
-                    kprint("Expected end of command.");
-                    break;
-                }
+            } 
+            else if (tok->isstring(keywords[1])) {
                 scroll();
             }
+        } 
+        else {
+            kprint("Expected command.\n");
+            break;
         }
-        else if (lxdat->istype(TokenType::eoc)) {continue;}
-        else {kprint("Expected command."); break;}
+        
+        i++;
     }
     kprint_char('\n');
 }

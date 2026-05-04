@@ -43,7 +43,7 @@
 #define CAPSLOCK 0x9F
 #define NUMLOCK 0xA0
 
-extern bool newlined;
+extern volatile bool newlined;
 extern bool khas_interrupted;
 
 void keyboard_init();

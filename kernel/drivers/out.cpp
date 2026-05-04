@@ -158,13 +158,24 @@ void kprintf(const char *__fmt, ...) {
 
 /*out.h: Get the current line as a string*/
 String kgets() {
-	String result;
-	int staticol = col;
-	col = COMMAND_START;
-	while (col <= staticol) {
-		result.append(VGA[pos]);
-		col++;
-		update_pos();
-	}
-	return result;
+    String result;
+    int r = row;
+    int c = col;
+
+    while (c >= 0 && (char)(VGA[r * 80 + c] & 0xFF) == ' ') {
+        c--;
+    }
+
+    int end_of_cmd = c;
+    while (c >= 0) {
+        char ch = (char)(VGA[r * 80 + c] & 0xFF);
+        if (ch == '>') break; 
+        c--;
+    }
+
+    for (int i = c + 1; i <= end_of_cmd; i++) {
+        result.append((char)(VGA[r * 80 + i] & 0xFF));
+    }
+
+    return result;
 }

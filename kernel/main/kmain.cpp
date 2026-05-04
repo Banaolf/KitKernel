@@ -51,12 +51,18 @@ void kernel_main(uint64_t magic, uint64_t* multiboot_address) {
 	while (1) {
 		if (newlined) {
 			newlined = false;
+			serial_print("Breakpoint 1\n"); //THIS DOES NOT PRINT!
 			String s = kgets();
+			serial_print("Breakpoint 2\n");
 			shmain(s.cstr());
-			kprint_char('>', 0x0F);
+			serial_print("Breakpoint 3\n");
+			kprint_char('>', 0x0F); //DOES NOT GET HERE!
+			serial_print("Breakpoint 4\n");
 		}
+		serial_print("Breakpoint 5\n");
 
-		khas_interrupted = false; 
+		khas_interrupted = false;
+		serial_print("Breakpoint 6\n"); //GET'S HERE!
 		while (!khas_interrupted) {
 			asm volatile("hlt");
 		}

@@ -328,16 +328,27 @@ String String::substr(int i1, int i2) const {
 	}
 	return rslt;
 }
-Vector<String> String::split(const char __splitwith) const {
-	Vector<String> rvl;
-	int last_found = 0;
-	for (int i = 0; i < this->len; i++) {
-		if (this->buffer[i] == __splitwith) {
-			rvl.push(this->substr(last_found, i));
-			last_found = i+1;
-		}
-	}
-	return rvl;
+Vector<String> String::split(char delimiter) const {
+    Vector<String> result;
+    String current;
+
+    for (int i = 0; i < this->len; i++) {
+        if (this->buffer[i] == delimiter) {
+            if (current.length() > 0) {
+                result.push(current);
+                current = String("");
+            }
+        } else {
+            current.append(this->buffer[i]);
+        }
+    }
+
+    // Don't forget the last part!
+    if (current.length() > 0) {
+        result.push(current);
+    }
+
+    return result;
 }
 String intostr(long long n) {
 	if (n == 0) return String("0");
