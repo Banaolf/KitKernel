@@ -19,32 +19,32 @@ void kernel_main(uint64_t magic, uint64_t* multiboot_address) {
 		serial_print("Magic number does not match!\n");
 		halt();
 	}
-	serial_print("Welcome!\n");
+	serial_print("Magic number is correct.\n");
+	serial_print("Initiating!\n");
 	init_gdt();
-	serial_print("Initted GDT\n");
+	serial_print("Initiated GDT\n");
 	idt_init();
-	serial_print("Initted IDT\n");
+	serial_print("Initiated IDT\n");
 	pic_init();
-	serial_print("Initted PIC\n");
+	serial_print("Initiated PIC\n");
 
 	pmm_init(multiboot_address);
-	serial_print("Initted PMM\n");
+	serial_print("Initiated PMM\n");
 	paging_init();
-	serial_print("Initted Paging\n");
+	serial_print("Initiated Paging\n");
 	heap_init(g_pml4_phys);
-	serial_print("Initted Heap\n");
+	serial_print("Initiated Heap\n");
 
 	tss_init();
-	serial_print("Initted TSS(memory)\n");
+	serial_print("Initiated TSS(memory)\n");
 
 	keyboard_init();
-	serial_print("Initted Keyboard\n");
+	serial_print("Initiated Keyboard\n");
 	pit_init(100);
-	serial_print("Initted PIT(Programable Interval Timer)\n");
+	serial_print("Initiated PIT(Programable Interval Timer)\n");
 	asm volatile("sti");
 	serial_print("Ended Initiating!\n");
 
-	serial_print("Magic number is correct.\n");
 	kprint("Welcome to Kit Kernel!\n");
 	kprint_char('>', 0x0F);
 

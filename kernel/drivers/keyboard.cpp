@@ -83,7 +83,6 @@ void keyboard_handler_callback() {
 	serial_print("Callback\n");
 	khas_interrupted = true;
 	uint8_t scancode = inb(0x60);
-	if (newlined) newlined = false;
 
 	if (scancode == 0xE0) {
 		is_extended = true;

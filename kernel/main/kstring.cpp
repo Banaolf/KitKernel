@@ -193,7 +193,63 @@ bool String::equals(const char* str) const {
 	return true;
 }
 bool String::equals(const String& str) const {
-	return String::equals(str.cstr());
+	return this->equals(str.cstr());
+}
+void String::strip(const char __tostrip) {
+    if (this->len == 0 || this->buffer == nullptr) return;
+
+    int start = 0;
+    while (start < this->len && this->buffer[start] == __tostrip) {
+        start++;
+    }
+
+    int end = this->len - 1;
+    while (end >= start && this->buffer[end] == __tostrip) {
+        end--;
+    }
+
+    int new_len = (end - start) + 1;
+
+    if (new_len <= 0) {
+        this->buffer[0] = '\0';
+        this->len = 0;
+    } else {
+        if (start > 0) {
+            for (int j = 0; j < new_len; j++) {
+                this->buffer[j] = this->buffer[start + j];
+            }
+        }
+        this->buffer[new_len] = '\0';
+        this->len = new_len;
+    }
+}
+void String::lstrip(const char __tostrip) {
+    if (this->len == 0 || this->buffer == nullptr) return;
+
+    int start = 0;
+    while (start < this->len && this->buffer[start] == __tostrip) {
+        start++;
+    }
+
+    if (start > 0) {
+        int new_len = this->len - start;
+        for (int i = 0; i < new_len; i++) {
+            this->buffer[i] = this->buffer[start + i];
+        }
+        this->buffer[new_len] = '\0';
+        this->len = new_len;
+    }
+}
+void String::rstrip(const char __tostrip) {
+    if (this->len == 0 || this->buffer == nullptr) return;
+
+    int end = this->len - 1;
+    while (end >= 0 && this->buffer[end] == __tostrip) {
+        end--;
+    }
+
+    this->len = end + 1;
+    this->buffer[this->len] = '\0';
 }
 bool String::find(const char* sub) const {
 	int subLen = Strlen(sub);

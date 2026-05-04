@@ -22,14 +22,28 @@ void set_idt_gate(int n, uint64_t handler) {
 }
 
 void breaks(interrupt_frame* frame) {
-    serial_print("Broke!\n");
-
-    kprint_times(COL_MAX, "-");
+    asm volatile("cli"); 
     
-    serial_print(fmtString("Vector: %x\nErrCode: %x\nRIP: %x\nCS: %x\nRFLAGS: %x\nRBP %x\n", frame->interrupt_number, frame->error_code, frame->rip, frame->cs, frame->rflags, frame->rbp).cstr());
-    kprintf("Vector: %x\nErrCode: %x\nRIP: %x\nCS: %x\nRFLAGS: %x\nRBP %x\n", frame->interrupt_number, frame->error_code, frame->rip, frame->cs, frame->rflags, frame->rbp);
+    serial_print("!!! BROKE !!!\n");
+    
+    char buffer[19];
+    kprintln(uint_to_str(frame->interrupt_number, buffer));
+    char buffer2[19];
+    kprintln(uint_to_str(frame->error_code, buffer2));
+    char buffer3[19];
+    kprintln(uint_to_hex(frame->rip, buffer3));
+    char buffer4[19];
+    kprintln(uint_to_hex(frame->cs, buffer4));
+    char buffer5[19];
+    kprintln(uint_to_hex(frame->rsi, buffer5));
+    char buffer6[19];
+    kprintln(uint_to_hex(frame->rflags, buffer6));
+    char buffer7[19];
+    kprintln(uint_to_hex(frame->ss, buffer7));
 
-    halt();
+    while(1) {
+        asm volatile("hlt");
+    }
 }
 
 extern "C" void common_interrupt_handler(interrupt_frame* frame) {

@@ -81,6 +81,9 @@ public:
     void backspace();
     void backspace(const int times);
     void clear();
+    void strip(const char __tostrip=' ');
+    void lstrip(const char __tostrip=' ');
+    void rstrip(const char __tostrip=' ');
     const char* cstr() const;
     Vector<String> split(const char __splitwith) const;
     String substr(const int i1, const int i2) const;
@@ -90,5 +93,6 @@ String fmtString(const char* fmt, ...);
 String intostr(long long n);
 String ftostr(double f);
 char* uint_to_str(uint64_t value, char* buffer);
+char* uint_to_hex(uint64_t value, char* buffer);
 int strToInt(const String& s);
 void strToFloat(const String& s, float& out);
